@@ -11,9 +11,9 @@ defmodule Test.Gulp.Parallel do
       require Gulp.Parallel
       import  Gulp.Parallel
 
-        par with a <- 1,
-                 b <- a + 1,
-             do: a + b
+        par(nil, (with a <- 1,
+                       b <- a + 1,
+                   do: a + b))
       """
     end
   end
@@ -80,14 +80,14 @@ defmodule Test.Gulp.Parallel do
   end
 
   test "returns the correct result in the simple case" do
-    func = parallel with a <- { :ok, 3 }, b <- { :ok, 5 }, do: a*b
+    func = parallel(nil, (with a <- { :ok, 3 }, b <- { :ok, 5 }, do: a*b))
     assert func.() == { :ok, 15 }
   end
 
   test "handles pattern matching" do
-    func = parallel with { a, b }    <- { :ok, { 5, 7 } },
+    func = parallel(nil, (with { a, b }    <- { :ok, { 5, 7 } },
                          %{ val: c } <- { :ok, %{ other: 99, val: 11 } },
-                     do: a*b*c
+                     do: a*b*c))
     assert func.() == { :ok, 5*7*11 }
   end
 
@@ -99,24 +99,24 @@ defmodule Test.Gulp.Parallel do
       def transform(), do: { :ok, 13 }
     end
 
-    func = parallel with a <- A, b <- B, do: a*b
+    func = parallel(nil, (with a <- A, b <- B, do: a*b))
 
     assert func.() == { :ok, 11*13 }
   end
 
   test "works asynchronously" do
-    func = parallel with a <- ( :timer.sleep(50); { :ok, 7 }),
-                         b <- ( :timer.sleep(50); { :ok, 11 }),
-                     do: a*b
+    func = parallel(nil, (with a <- ( :timer.sleep(50); { :ok, 7 }),
+                               b <- ( :timer.sleep(50); { :ok, 11 }),
+                           do: a*b))
 
     assert_took expected: { :ok, 77 }, min: 50, max: 60, func: func
   end
 
 
   test "works asynchronously with different timings" do
-    func = parallel with a <- ( :timer.sleep(5);  { :ok, 7 }),
-                         b <- ( :timer.sleep(50); { :ok, 11 }),
-                     do: a*b
+    func = parallel(nil, (with a <- ( :timer.sleep(5);  { :ok, 7 }),
+                               b <- ( :timer.sleep(50); { :ok, 11 }),
+                           do: a*b))
 
     assert_took expected: { :ok, 77 }, min: 50, max: 60, func: func
   end

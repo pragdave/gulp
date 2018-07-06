@@ -2,16 +2,16 @@ defmodule Gulp.Sequence do
 
   alias Gulp.Util
 
-  def sequence(steps) do
-    steps
-  end
+  defmacro sequence(arg, steps), do: do_seq(arg, steps)
+  defmacro      seq(arg, steps), do: do_seq(arg, steps)
 
-  defmacro seq({ :with, _context, list }) when is_list(list) do
+  @spec seq(any(), { :with, list(), Macro.t }) :: Macro.t | no_return()
+  def do_seq(_arg, { :with, _context, list }) when is_list(list) do
     list
     |> Enum.map(&Util.is_module?(&1, fn error -> report_call_error(error) end))
   end
 
-  defmacro seq(other) do
+  def do_seq(_arg, other) do
     report_call_error(other)
   end
 
@@ -19,7 +19,7 @@ defmodule Gulp.Sequence do
   defp report_call_error(other) do
     raise """
 
-    \nInvalid form of `seq with`. Expecting a comma-separated list of modules.
+    \nInvalid form of `seq with`. Expecting something like
 
     Got:
 

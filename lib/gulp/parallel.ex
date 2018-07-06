@@ -1,9 +1,8 @@
 defmodule Gulp.Parallel do
 
 
-  defmacro parallel(arg \\ (quote do _arg \\ nil end), steps)
   defmacro parallel(arg, steps), do: do_parallel(arg, steps)
-  defmacro par(arg, steps),      do: do_parallel(arg,steps)
+  defmacro      par(arg, steps), do: do_parallel(arg, steps)
 
 
 
@@ -20,7 +19,7 @@ defmodule Gulp.Parallel do
     generate_code(arg, transforms, expression)
   end
 
-  defp do_parallel(arg, other) do
+  defp do_parallel(_arg, other) do
     report_call_error(other)
   end
 
@@ -34,9 +33,10 @@ defmodule Gulp.Parallel do
                do: «some expression involving v1, v2, ...»
   """
 
-  defp report_call_error(clause, specific \\ nil)
+#  defp report_call_error(clause, specific \\ nil)
 
-  defp report_call_error(clause, nil) do
+  @spec report_call_error(Macro.t) :: no_return()
+  defp report_call_error(clause) do
     raise @error_msg <> """
 
     Got:
@@ -46,15 +46,16 @@ defmodule Gulp.Parallel do
     """
   end
 
-  defp report_call_error(clause, detail) do
-    raise @error_msg <> """
+  # @spec report_call_error(Macro.t, Macro.t) :: no_return()
+  # defp report_call_error(clause, detail) do
+  #   raise @error_msg <> """
 
-    Got #{Macro.to_string(detail)} in:
+  #   Got #{Macro.to_string(detail)} in:
 
-    #{Macro.to_string(clause)}
+  #   #{Macro.to_string(clause)}
 
-    """
-  end
+  #   """
+  # end
 
 
   #-----------------------------------------------------------------------------+
@@ -253,10 +254,10 @@ end
 defmodule B do
   require Gulp.Parallel
 
-    func = Gulp.Parallel.parallel (with  b <- { :ok, 99 } do
+    func = Gulp.Parallel.parallel(value, (with  b <- { :ok, value + 99 } do
        b
-    end)
+    end))
 
-    IO.inspect func.()
+    IO.inspect func.(123)
 
 end
