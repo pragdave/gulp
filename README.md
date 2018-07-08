@@ -1,7 +1,9 @@
+> # DO NOT USE!
+
 # GULP—Kinda Like Plug, But Backwards…
 
-Gulp lets you construct pipelines of actions in a composable, functional
-way.
+Gulp lets you construct pipelines of actions in a composable, dynamic,
+configurable, and **functional** way.
 
 There are three types of action:
 
@@ -9,7 +11,7 @@ There are three types of action:
 * a _transform_ is a function that takes a value and produces either
   another value or an error
 * a _sink_ is the end of a pipeline: it receives data from a pipeline,
-  and then disposes of in into the rest of the system.
+  and then disposes of it into the rest of the system.
 
 In a logging system, the _sources_ could be things such as an interface
 to the system error log, and API for programs to generate log messages,
@@ -20,6 +22,10 @@ content or level, extracting summary information, and so on.
 
 The _sinks_ could format messages for appropriate devices, writing
 messages to databases, plain text logfiles, and SaaS services.
+
+You'd configure these together by creating a Gulp pipeline:
+
+### TODO: logger gulp pipeline
 
 In addition, all the actions in a system may have associated
 configuration information. This information is supplied to them when
@@ -32,8 +38,8 @@ to them on each request.
 A source is an Elixir stream. You can use the built-in streams, or
 implement your own modules using `Stream.xxx` functions.
 
-The values returned by a source stream must be packaged into an `{ :ok,
-value }` tuple.
+The values returned by a source stream must be packaged into an
+`{ :ok, value }` tuple.
 
 Here's an example source that reads lines from the console and injects
 them into a pipeline.
@@ -160,3 +166,29 @@ Source, transform, and sink bundles can themselves be composed into
 larger source, transform, or sink bundles. For example:
 
 ...
+
+
+inside action, &value, &config
+
+Gulp.source(fn -> return_value end, options)
+Gulp.source_bundle(name: ..., next: ..., [
+  Module,  name=module
+  { Module, options },
+  fn,      no name, no config
+  { fn, options }
+])
+
+
+
+every action has config(config) -> updated config
+
+
+config includes
+
+all:  name
+
+source: target
+
+transform: target
+
+sink: ?
