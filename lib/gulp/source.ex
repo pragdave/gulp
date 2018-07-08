@@ -5,7 +5,7 @@ defmodule Gulp.Source do
   alias Gulp.Source.Config
 
   def start_link(config) do
-    GenServer.start_link(__MODULE__, config, name: config.name)
+    GenServer.start_link(__MODULE__, config)
   end
 
   def reconfigure(source, new_config) do
@@ -18,11 +18,18 @@ defmodule Gulp.Source do
 
 
   def init(config) do
-    { :ok, Config.from(config) }
+    real_config = Config.new(config)
+    true = Process.register(self(), real_config.name)
+    { :ok,  real_config }
   end
 
   def handle_cast({ :run }, config) do
-    config.function.(config)
+    emitter = fn value ->
+      :ok = GenServer.cast(config.next, { :process, value })
+    end
+
+    config.function.(config, emitter)
+    { :stop, :normal, config }
   end
 
   def handle_call({ :reconfigure, new_config }, _, config) do

@@ -1,12 +1,10 @@
 defmodule Gulp.Source.Config do
 
   use Gulp.Config,
-      fields:   [ ],
-      based_on: Gulp.Config.Global
+      fields:   [
+        { :function, required: true },
+      ],
+      based_on: Gulp.Config.Emitter
 
-
-  def from(config) do
-    config
-  end
 
 end
