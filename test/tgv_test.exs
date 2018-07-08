@@ -1,3 +1,0 @@
-defmodule GulpTest do
-
-end
